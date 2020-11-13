@@ -6,12 +6,21 @@ from interview.models import Candidate
 
 class CandidateAdmin(admin.ModelAdmin):
     exclude = ('creator', 'created_date', 'modified_date')
+
     list_display = ('username', 'city', 'bachelor_school',
                     'first_score', 'first_result',
                     'first_interviewer_user', 'second_score',
                     'second_result', 'second_interviewer_user',
                     'hr_score', 'hr_result', 'hr_interviewer_user',)
-    # fieldssets 可以让admin管理页面把信息进行分组，展示的更加清晰
+    # 设置搜索字段
+    search_fields = ('username', 'phone', 'email', 'bachelor_school')
+    # 设置筛选字段
+    list_filter = ('city', 'first_result', 'second_result', 'hr_result',
+                   'first_interviewer_user', 'second_interviewer_user',
+                   'hr_interviewer_user')
+    # 设置排序字段
+    ordering = ('hr_result', 'second_result', 'first_result')
+    # fieldsets 可以让admin管理页面把信息进行分组，展示的更加清晰
     fieldsets = (
         ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
                              'email', 'apply_position', 'born_address',

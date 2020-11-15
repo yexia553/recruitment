@@ -20,5 +20,6 @@ from django.conf.urls import include
 
 urlpatterns = [
     url(r'^', include('jobs.urls')),
+    path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
 ]

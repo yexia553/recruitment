@@ -1,0 +1,6 @@
+将项目初始的配置文件移动到项目根目录下的settings目录中，命令为base.py，并将manage.py中
+配置文件的指向改为setting.base；  
+将base中一些敏感信息的值修改为None，通过在local和production在重新赋值来覆盖；  
+在gitignore中根据实际需要决定是否不提交local和production文件到代码仓库中，这样可以避免重要信息的泄露  
+在我这个学习项目中由于不区分开发环境和生产环境，只是按照教程创建了一个样本文件，依然只使用base文件中的配置
+

@@ -99,5 +99,59 @@ class CandidateAdmin(admin.ModelAdmin):
                                'hr_interviewer_user', 'hr_remark')})
     )
 
+    def get_group_names(self, user):
+        """
+        获取用户的组名信息
+        :param user: 在admin中可以使用user，感觉类似于views中request.User，
+        具体有哪些参数可以使用pycharm debug模式中的Evaluate功能查看
+        :return:
+        """
+        print(user)
+        group_names = []
+        for g in user.groups.all():
+            group_names.append(g.name)
+        return group_names
+
+    def get_readonly_fields(self, request, obj):
+        """
+        根据用户所属组是否为HR或者面试官，返回不同的readonly_field信息；
+        一面和二面的面试官信息只有HR可以设置，面试官不可以，
+        所以'first_interviewer_user'和'second_interviewer_user'对于面试官来说应该是只读的
+        :param request:
+        :param obj:
+        :return:
+        """
+        group_names = self.get_group_names(request.user)
+        if 'interviewer' in group_names:
+            logger.info("interviewer is in user's group for %s" % request.user.username)
+            return ('first_interviewer_user', 'second_interviewer_user')
+        return ()
+
+    def get_list_editable(self, request):
+        """
+        根据用户的所属组来决定返回什么样的list_editable，
+        只有当用户属于hr组的时候才可以编辑'first_interviewer_user', 'second_interviewer_user'
+        list_editable字段可以让用户直接在导航页面就可以编辑相关字段，而不用点击到详情页面，适合批量操作
+        :param request:
+        :return:
+        """
+        group_names = self.get_group_names(request.user)
+
+        if request.user.is_superuser or 'hr' in group_names:
+            return ('first_interviewer_user', 'second_interviewer_user',)
+        return ()
+
+    def get_changelist_instance(self, request):
+        """
+        override admin method and list_editable property value
+        with values returned by our custom method implementation.
+        django 的admin中原生不支持通过函数的方法返回list_editable字段，
+        修改父类中get_changelist_instance方法使其支持该功能
+        """
+        self.list_editable = self.get_list_editable(request)
+        return super(CandidateAdmin, self).get_changelist_instance(request)
+
 
 admin.site.register(Candidate, CandidateAdmin)
+# 设置页面标题
+admin.site.site_header = "招聘系统"

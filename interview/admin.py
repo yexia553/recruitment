@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponse
 from interview.models import Candidate
+from interview import candidate_fieldstes as cf
 import logging
 from datetime import datetime
 import csv
@@ -72,8 +73,8 @@ class CandidateAdmin(admin.ModelAdmin):
                    'hr_interviewer_user')
     # 设置排序字段
     ordering = ('hr_result', 'second_result', 'first_result')
-    # fieldsets 可以让admin管理页面把信息进行分组，展示的更加清晰
-    fieldsets = (
+
+    default_fieldsets = (
         ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
                              'email', 'apply_position', 'born_address',
                              'gender', 'candidate_remark', 'bachelor_school',
@@ -98,6 +99,55 @@ class CandidateAdmin(admin.ModelAdmin):
                                'hr_advantage', 'hr_disadvantage', 'hr_result',
                                'hr_interviewer_user', 'hr_remark')})
     )
+
+    default_fieldsets_first = (
+        ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
+                             'email', 'apply_position', 'born_address',
+                             'gender', 'candidate_remark', 'bachelor_school',
+                             'master_school', 'doctor_school', 'major',
+                             'degree', 'test_score_of_general_ability',
+                             'paper_score', 'last_editor',)}),
+        ('第一轮面试记录', {'fields': ('first_score', 'first_learning_ability',
+                                'first_professional_competency', 'first_advantage',
+                                'first_disadvantage', 'first_result',
+                                'first_recommend_position',
+                                'first_interviewer_user', 'first_remark')}),
+    )
+
+    default_fieldsets_second = (
+        ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
+                             'email', 'apply_position', 'born_address',
+                             'gender', 'candidate_remark', 'bachelor_school',
+                             'master_school', 'doctor_school', 'major',
+                             'degree', 'test_score_of_general_ability',
+                             'paper_score', 'last_editor',)}),
+        ('第二轮面试记录', {'fields': ('second_score', 'second_learning_ability',
+                                'second_professional_competency',
+                                'second_pursue_of_excellence',
+                                'second_communication_ability',
+                                'second_pressure_score', 'second_advantage',
+                                'second_disadvantage', 'second_result',
+                                'second_recommend_position', 'second_interviewer_user',
+                                'second_remark',)}),
+    )
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        设置权限，一面面试官仅填写一面反馈， 二面面试官可以填写二面反馈;
+        这个函数有个bug，当一面和二面的面试官是同一个人的时候，面试官只能看到default_fieldsets_first的信息，
+
+        :param request:
+        :param obj:表示页面上选中的候选人对象
+        :return:
+        """
+        group_names = self.get_group_names(request.user)
+        if 'interviewer' in group_names and obj.first_interviewer_user == request.user:
+            return cf.default_fieldsets_first
+        if 'interviewer' in group_names and obj.second_interviewer_user == request.user:
+            return cf.default_fieldsets_second
+        if 'hr' in group_names:
+            return cf.default_fieldsets
+        return ()
 
     def get_group_names(self, user):
         """

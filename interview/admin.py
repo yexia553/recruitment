@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponse
+from django.db.models import Q
 from interview.models import Candidate
 from interview import candidate_fieldstes as cf
 import logging
@@ -53,6 +54,7 @@ def export_model_as_csv(modeladmin, request, queryset):
 
 # 定义export_model_as_csv在admin页面上显示的名称
 export_model_as_csv.short_description = '导出为CSV文件'
+export_model_as_csv.allowed_permissions = ('export',)
 
 
 class CandidateAdmin(admin.ModelAdmin):
@@ -74,62 +76,18 @@ class CandidateAdmin(admin.ModelAdmin):
     # 设置排序字段
     ordering = ('hr_result', 'second_result', 'first_result')
 
-    default_fieldsets = (
-        ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
-                             'email', 'apply_position', 'born_address',
-                             'gender', 'candidate_remark', 'bachelor_school',
-                             'master_school', 'doctor_school', 'major',
-                             'degree', 'test_score_of_general_ability',
-                             'paper_score', 'last_editor',)}),
-        ('第一轮面试记录', {'fields': ('first_score', 'first_learning_ability',
-                                'first_professional_competency', 'first_advantage',
-                                'first_disadvantage', 'first_result',
-                                'first_recommend_position',
-                                'first_interviewer_user', 'first_remark')}),
-        ('第二轮面试记录', {'fields': ('second_score', 'second_learning_ability',
-                                'second_professional_competency',
-                                'second_pursue_of_excellence',
-                                'second_communication_ability',
-                                'second_pressure_score', 'second_advantage',
-                                'second_disadvantage', 'second_result',
-                                'second_recommend_position', 'second_interviewer_user',
-                                'second_remark',)}),
-        ('HR面试记录', {'fields': ('hr_score', 'hr_responsibility', 'hr_communication_ability',
-                               'hr_logic_ability', 'hr_potential', 'hr_stability',
-                               'hr_advantage', 'hr_disadvantage', 'hr_result',
-                               'hr_interviewer_user', 'hr_remark')})
-    )
-
-    default_fieldsets_first = (
-        ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
-                             'email', 'apply_position', 'born_address',
-                             'gender', 'candidate_remark', 'bachelor_school',
-                             'master_school', 'doctor_school', 'major',
-                             'degree', 'test_score_of_general_ability',
-                             'paper_score', 'last_editor',)}),
-        ('第一轮面试记录', {'fields': ('first_score', 'first_learning_ability',
-                                'first_professional_competency', 'first_advantage',
-                                'first_disadvantage', 'first_result',
-                                'first_recommend_position',
-                                'first_interviewer_user', 'first_remark')}),
-    )
-
-    default_fieldsets_second = (
-        ('基础信息', {'fields': ('userid', 'username', 'city', 'phone',
-                             'email', 'apply_position', 'born_address',
-                             'gender', 'candidate_remark', 'bachelor_school',
-                             'master_school', 'doctor_school', 'major',
-                             'degree', 'test_score_of_general_ability',
-                             'paper_score', 'last_editor',)}),
-        ('第二轮面试记录', {'fields': ('second_score', 'second_learning_ability',
-                                'second_professional_competency',
-                                'second_pursue_of_excellence',
-                                'second_communication_ability',
-                                'second_pressure_score', 'second_advantage',
-                                'second_disadvantage', 'second_result',
-                                'second_recommend_position', 'second_interviewer_user',
-                                'second_remark',)}),
-    )
+    def has_export_permission(self, request):
+        """
+        检查当前用户是否有导出权限
+        1. self.opts获取当前访问的模型类的类名，比如这里是interview app中的candidate类，
+        所以self.opts = interview.candidate
+        2. opts.app_label 获取当前所在app的名称，这里就是interview
+        3. 思考： 鉴于第二点，所以django中的权限是按照app级别区分的，而不是模型类区分的？
+        :param request:
+        :return:
+        """
+        opts = self.opts
+        return request.user.has_perm('%s.%s' % (opts.app_label, "export"))
 
     def get_fieldsets(self, request, obj=None):
         """
@@ -145,9 +103,22 @@ class CandidateAdmin(admin.ModelAdmin):
             return cf.default_fieldsets_first
         if 'interviewer' in group_names and obj.second_interviewer_user == request.user:
             return cf.default_fieldsets_second
-        if 'hr' in group_names:
+        if 'hr' in group_names or request.user.is_superuser:
             return cf.default_fieldsets
         return ()
+
+    def get_queryset(self, request):
+        """
+        对于非管理员，非HR，获取自己是一面面试官或者二面面试官的候选人集合:s
+        :param request:
+        :return:
+        """
+        qs = super(CandidateAdmin, self).get_queryset(request)
+
+        group_names = self.get_group_names(request.user)
+        if request.user.is_superuser or 'hr' in group_names:
+            return qs
+        return Candidate.objects.filter(Q(first_interviewer_user=request.user) | Q(second_interviewer_user=request.user))
 
     def get_group_names(self, user):
         """

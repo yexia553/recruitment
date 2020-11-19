@@ -1,7 +1,24 @@
 <!--jobs/templates/base.html-->
-<h1 > 匠果科技开放职位</h1>
+<h1 style="margin:auto; width:50%;"> 匠果科技开放职位</h1>
 
 <p></p>
+{% block header %}
+    <a href="/" style="color:#087bff; text-decoration:none;">首页</a>
+    <a href="/joblist" style="color:#087bff; text-decoration:none;">职位列表</a>
+
+    {% if user.is_authenticated %}
+        <a href="/accounts/logout/" style="color:#087bff; text-decoration:none;">登出</a>
+    {% else %}
+        <a href="/accounts/login/" style="color:#087bff; text-decoration:none;">登录</a>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <p>终于等到你 {{ user.username }}, 期待你的加入，用技术去改变世界</p>
+    {% else %}
+        <p>期待你的加入，登录后即可提交简历</p>
+    {% endif %}
+
+{% endblock %}
 
 {% block content %}
 {% endblock %}

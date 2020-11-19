@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 # 登录成功之后跳转的url
 LOGIN_REDIRECT_URL = '/'
 # 注册成功之后跳转的url
-SIMPLE_BACKEND_REDIRECT_URL = '/accouts/login'
+SIMPLE_BACKEND_REDIRECT_URL = '/accounts/login/'
 
 # Application definition
 INSTALLED_APPS = [

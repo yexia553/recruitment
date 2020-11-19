@@ -27,10 +27,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# 登录成功之后跳转的url
+LOGIN_REDIRECT_URL = '/'
+# 注册成功之后跳转的url
+SIMPLE_BACKEND_REDIRECT_URL = '/accouts/login'
 
 # Application definition
-
 INSTALLED_APPS = [
+    'registration',  # 快速实现用户注册功能，通过/accounts/register访问
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',

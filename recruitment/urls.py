@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^', include('jobs.urls')),
     path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
 ]

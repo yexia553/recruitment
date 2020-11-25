@@ -34,6 +34,7 @@ SIMPLE_BACKEND_REDIRECT_URL = '/accounts/login/'
 
 # Application definition
 INSTALLED_APPS = [
+    'bootstrap4',
     'registration',  # 快速实现用户注册功能，通过/accounts/register访问
     'grappelli',
     'django.contrib.admin',

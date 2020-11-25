@@ -1,6 +1,15 @@
+{# Load the tag library #}
+{% load bootstrap4 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{# Display django.contrib.message as Bootstrap alerts #}
+{% bootstrap_messages %}
+
 <h1>提交简历</h1>
 <form method="post">
     {% csrf_token %}
+    {% bootstrap_form form %}
     {{ form.as_p}}
     <input type="submit" value="提交">
 </form>

@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django.contrib import messages
 from jobs.models import Job, Resume
+from interview.models import Candidate
+from datetime import datetime
 
 
 class JobAdmin(admin.ModelAdmin):
@@ -13,7 +16,26 @@ class JobAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+def enter_interview_process(modeladmin, request, queryset):
+    candidate_names = ''
+    for resume in queryset:
+        candidate = Candidate()
+        # 把resume的属性都赋值给candidate
+        candidate.__dict__.update(resume.__dict__)
+        candidate.created_date = datetime.now()
+        candidate.modified_date = datetime.now()
+        candidate_names += candidate.username + ', '
+        candidate.save()
+    # 这个函数激活的时候在页面上展示一条消息
+    messages.add_message(request, messages.INFO, '候选人%s已经进入面试流程' % candidate_names)
+
+
+enter_interview_process.short_description = '进入面试流程'
+
+
 class ResumeAdmin(admin.ModelAdmin):
+    actions = (enter_interview_process, )
+
     list_display = ('username', 'applicant', 'city', 'apply_position', 'bachelor_school', 'master_school', 'major','created_date')
 
     readonly_fields = ('applicant', 'created_date', 'modified_date',)

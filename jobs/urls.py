@@ -8,6 +8,7 @@ urlpatterns = [
     # url中使用括号来捕捉参数，通过?P<>来命令
     url(r'job/(?P<job_id>\d+)', views.job_detail, name='job_detail'),
     path(r'resume/add/', views.ResumeCreateView.as_view(), name='resume-add'),
+    path(r'resume/<int:pk>/', views.ResumeDetailView.as_view(), name='resume-detail'),
     # 设置首页，跳转到职位列表
     url(r'^$', views.job_list, name='index'),
 ]

@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.http import HttpResponse
 from django.db.models import Q
+from django.utils.safestring import mark_safe
 from interview.models import Candidate
 from interview import candidate_fieldstes as cf
+from jobs.models import Resume
 import logging
 from datetime import datetime
 import csv
@@ -62,7 +64,7 @@ class CandidateAdmin(admin.ModelAdmin):
     actions = [export_model_as_csv, ]
     exclude = ('creator', 'created_date', 'modified_date')
 
-    list_display = ('username', 'city', 'bachelor_school',
+    list_display = ('username', 'get_resume', 'city', 'bachelor_school',
                     'first_score', 'first_result',
                     'first_interviewer_user', 'second_score',
                     'second_result', 'second_interviewer_user',
@@ -171,6 +173,17 @@ class CandidateAdmin(admin.ModelAdmin):
         """
         self.list_editable = self.get_list_editable(request)
         return super(CandidateAdmin, self).get_changelist_instance(request)
+
+    def get_resume(self, obj):
+        if not obj.phone:
+            return None
+        resumes = Resume.objects.filter(phone=obj.phone)
+        if resumes and len(resumes) > 0:
+            return mark_safe("<a href='/resume/%s/'>%s</a>" % (resumes[0].id, "查看简历"))
+        return None
+
+    get_resume.short_description = "查看简历"
+    get_resume.allow_tags = True
 
 
 admin.site.register(Candidate, CandidateAdmin)

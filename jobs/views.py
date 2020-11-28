@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.http import Http404
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.detail import DetailView
 
 from jobs.models import Job
 from jobs.models import Cities
@@ -55,3 +56,8 @@ class ResumeCreateView(LoginRequiredMixin, CreateView):
         "email", "apply_position", "gender",
         "bachelor_school", "master_school", "major", "degree", "picture", "attachment",
         "candidate_introduction", "work_experience", "project_experience"]
+
+
+class ResumeDetailView(DetailView):
+    model = Resume
+    template_name = 'resume_detail.html'

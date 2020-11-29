@@ -51,6 +51,8 @@ class Candidate(models.Model):
     first_result = models.CharField(max_length=256, choices=FIRST_INTERVIEW_RESULT_TYPE, blank=True,
                                     verbose_name=u'初试结果')
     first_recommend_position = models.CharField(max_length=256, blank=True, verbose_name=u'推荐部门')
+    # 关于related_name的解释请看：https://docs.djangoproject.com/zh-hans/3.1/topics/db/models/
+    # https://www.cnblogs.com/polite/p/10873945.html
     first_interviewer_user = models.ForeignKey(User, related_name='first_interviewer_user', blank=True, null=True, on_delete=models.CASCADE, verbose_name=u'面试官')
 
     first_remark = models.CharField(max_length=135, blank=True, verbose_name=u'初试备注')
@@ -99,7 +101,7 @@ class Candidate(models.Model):
         verbose_name = u'应聘者'
         verbose_name_plural = u'应聘者'
 
-        # 定义权限集合，可以在admin.py中根据不同权限来决定user可以做哪些事情
+        # 定义权限集合，可以在admin后台中根据不同权限来决定user可以做哪些事情
         permissions = [
             ("export", "Can export candidate list"),
             ("notify", "notify interviewer for candidate review"),

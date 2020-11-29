@@ -23,6 +23,8 @@ def job_list(request):
         'job_list': job_list
     }
 
+    # job_city和job_type是SmallIntegerField类型的数据，
+    # 通过choices做选择，存在数据库中的是0和1，需要转换成字符串值
     for job in job_list:
         job.city_name = Cities[job.job_city][1]
         job.job_type = JobTypes[job.job_type][1]
@@ -53,9 +55,11 @@ class ResumeCreateView(LoginRequiredMixin, CreateView):
     success_url = '/joblist/'
     # 需要填写的字段
     fields = ["username", "city", "phone",
-        "email", "apply_position", "gender",
-        "bachelor_school", "master_school", "major", "degree", "picture", "attachment",
-        "candidate_introduction", "work_experience", "project_experience"]
+              "email", "apply_position", "gender",
+              "bachelor_school", "master_school", "major",
+              "degree", "picture", "attachment",
+              "candidate_introduction", "work_experience",
+              "project_experience"]
 
 
 class ResumeDetailView(DetailView):

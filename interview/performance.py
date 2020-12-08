@@ -1,5 +1,5 @@
 """
-使用函数的方法自定义一个django中间件
+使用函数的方法自定义一个django中间件,该中间件记录服务器处理一个请求的耗时
 """
 import time
 import logging

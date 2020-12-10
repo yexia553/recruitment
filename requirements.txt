@@ -12,7 +12,6 @@ click-repl==0.1.6
 cryptography==3.3
 Django==3.0.2
 django-bootstrap4==2.3.1
-django-celery==3.3.1
 django-filter==2.4.0
 django-grappelli==2.14.2
 django-redis==4.12.1

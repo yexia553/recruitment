@@ -1,1 +1,1 @@
-celery --app=task worker -l INFO
+celery --app=tasks worker -l INFO

@@ -5,6 +5,7 @@ from django.conf.urls import include
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 from jobs.models import Job
+from jobs.models import Resume
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -29,9 +30,21 @@ class JobViewset(viewsets.ModelViewSet):
     serializer_class = JobSerializer
 
 
+class ResumeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Resume
+        fields = '__all__'
+
+
+class ResumeViewset(viewsets.ModelViewSet):
+    queryset = Resume.objects.all()
+    serializer_class = ResumeSerializer
+
+
 router = routers.DefaultRouter()
 router.register('users', UserViewset)
 router.register('jobs', JobViewset)
+router.register('resumes', ResumeViewset)
 
 urlpatterns = [
     url(r'^', include('jobs.urls')),

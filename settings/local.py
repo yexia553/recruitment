@@ -23,3 +23,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 # CELERYD_MAX_TASKS_PER_CHILD = 10
 # CELERYD_LOG_FILE = os.path.join(BASE_DIR, "logs", "celery_work.log")
+
+

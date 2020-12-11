@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.http import Http404
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,6 +10,7 @@ from jobs.models import Job
 from jobs.models import Cities
 from jobs.models import JobTypes
 from jobs.models import Resume
+from jobs.forms import ResumeForm
 
 
 def job_list(request):
@@ -46,7 +47,8 @@ def job_detail(request, job_id):
 
 class ResumeCreateView(LoginRequiredMixin, CreateView):
     """
-    CreateView 是Django自带的可以创建model实例对象的视图方法，常见的还有ListView等
+    CreateView 是Django自带的可以创建model实例对象的视图方法，常见的还有ListView等；
+    使用CreateView，在对应的html的form标签中不再需要action属性，也就是不用指明提交的url；
     """
     # 指明作用于哪一个model
     model = Resume
@@ -60,6 +62,20 @@ class ResumeCreateView(LoginRequiredMixin, CreateView):
               "degree", "picture", "attachment",
               "candidate_introduction", "work_experience",
               "project_experience"]
+
+    def post(self, request, *args, **kwargs):
+        """
+        还没弄清楚在这里引入post方法以及ResumeForm的作用;
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        form = ResumeForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(self.success_url)
+        return render(request, self.template_name, {'form': form})
 
 
 class ResumeDetailView(DetailView):

@@ -7,9 +7,8 @@
 {% bootstrap_messages %}
 
 <h1>提交简历</h1>
-<form method="post">
+<form method="post" style="width:600px;margin-left:5px" enctype="multipart/form-data">
     {% csrf_token %}
     {% bootstrap_form form %}
-    {{ form.as_p}}
-    <input type="submit" value="提交">
+    <button type='submit'>Submit</button>
 </form>

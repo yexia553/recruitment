@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from settings.secret_settings import EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,6 +35,7 @@ SIMPLE_BACKEND_REDIRECT_URL = '/accounts/login/'
 
 # Application definition
 INSTALLED_APPS = [
+    'simpleui',
     'bootstrap4',
     'registration',  # 快速实现用户注册功能，通过/accounts/register访问
     'grappelli',
@@ -194,4 +196,9 @@ REST_FRAMEWORK = {
     ]
 }
 
-
+# 邮件配置
+EMAIL_BACKEND
+EMAIL_HOST
+EMAIL_PORT
+EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD

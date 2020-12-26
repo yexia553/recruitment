@@ -8,6 +8,7 @@ from jobs.models import Resume
 import logging
 from datetime import datetime
 import csv
+from .tasks import send_interview_notify
 
 # 定义日志类，并获取当前代码文件的名字
 logger = logging.getLogger(__name__)
@@ -55,14 +56,25 @@ def export_model_as_csv(modeladmin, request, queryset):
     return response
 
 
+def notify_interviewer(modeladmin, request, queryset):
+    candidates = ''
+    interviewers_email = ''
+    for obj in queryset:
+        candidates = obj.username + ' ;' + candidates
+        interviewers_email = obj.first_interviewer_user.email + ',' + interviewers_email
+    # send_interview_notify.delay(candidates, interviewers_email)
+
+
 # 定义export_model_as_csv在admin页面上显示的名称
 export_model_as_csv.short_description = '导出为CSV文件'
 export_model_as_csv.allowed_permissions = ('export',)
 
+notify_interviewer.short_description = '通知一面面试官'
+
 
 class CandidateAdmin(admin.ModelAdmin):
     # actions 可以为admin后台添加额外的功能，list中指向一个函数
-    actions = [export_model_as_csv, ]
+    actions = [export_model_as_csv, notify_interviewer]
     exclude = ('creator', 'created_date', 'modified_date')
 
     list_display = ('username', 'get_resume', 'city', 'bachelor_school',

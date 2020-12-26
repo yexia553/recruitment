@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from settings.secret_settings import EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+from settings.secret_settings import EMAIL_BACKEND, EMAIL_HOST, \
+    EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_SSL
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -197,6 +198,7 @@ REST_FRAMEWORK = {
 }
 
 # 邮件配置
+EMAIL_USE_SSL
 EMAIL_BACKEND
 EMAIL_HOST
 EMAIL_PORT

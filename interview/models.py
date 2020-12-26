@@ -53,7 +53,8 @@ class Candidate(models.Model):
     first_recommend_position = models.CharField(max_length=256, blank=True, verbose_name=u'推荐部门')
     # 关于related_name的解释请看：https://docs.djangoproject.com/zh-hans/3.1/topics/db/models/
     # https://www.cnblogs.com/polite/p/10873945.html
-    first_interviewer_user = models.ForeignKey(User, related_name='first_interviewer_user', blank=True, null=True, on_delete=models.CASCADE, verbose_name=u'面试官')
+    first_interviewer_user = models.ForeignKey(User, related_name='first_interviewer_user', blank=True, null=True,
+                                               on_delete=models.CASCADE, verbose_name=u'面试官')
 
     first_remark = models.CharField(max_length=135, blank=True, verbose_name=u'初试备注')
 

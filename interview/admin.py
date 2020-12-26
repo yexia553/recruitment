@@ -56,18 +56,20 @@ def export_model_as_csv(modeladmin, request, queryset):
     return response
 
 
-def notify_interviewer(modeladmin, request, queryset):
-    candidates = ''
-    interviewers_email = ''
-    for obj in queryset:
-        candidates = obj.username + ' ;' + candidates
-        interviewers_email = obj.first_interviewer_user.email + ',' + interviewers_email
-    # send_interview_notify.delay(candidates, interviewers_email)
-
-
 # 定义export_model_as_csv在admin页面上显示的名称
 export_model_as_csv.short_description = '导出为CSV文件'
 export_model_as_csv.allowed_permissions = ('export',)
+
+
+def notify_interviewer(modeladmin, request, queryset):
+    candidates = ''
+    interviewers_email = list()
+    for obj in queryset:
+        candidates = obj.username + ' ;' + candidates
+        interviewers_email.append(obj.first_interviewer_user.email)
+    print(interviewers_email)
+    send_interview_notify.delay(candidates, interviewers_email)
+
 
 notify_interviewer.short_description = '通知一面面试官'
 

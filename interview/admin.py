@@ -13,6 +13,7 @@ from .tasks import send_interview_notify
 # 定义日志类，并获取当前代码文件的名字
 logger = logging.getLogger(__name__)
 
+# 定义哪些地段可以被export_model_as_csv导出为csv文件
 exportable_fields = ('username', 'city', 'phone', 'bachelor_school',
                      'master_school', 'degree', 'first_result',
                      'first_interviewer_user', 'second_result',
@@ -72,6 +73,7 @@ def notify_interviewer(modeladmin, request, queryset):
 
 
 notify_interviewer.short_description = '通知一面面试官'
+notify_interviewer.allowed_permissions = ('notify',)
 
 
 class CandidateAdmin(admin.ModelAdmin):
@@ -103,11 +105,16 @@ class CandidateAdmin(admin.ModelAdmin):
         4. 详细关于自定义权限和验证可以参考：https://docs.djangoproject.com/zh-hans/3.1/topics/auth/customizing/
         5. 在admin类中进行检查用户是否用这个权限，但是在export_model_as_csv并没有调用这个函数，
            那么权限的判断和export_model_as_csv绑定是在哪里做的呢 ？
+           答： 在有export_model_as_csv方法的页面刷新时就会自动运行这个方法进行检测
         :param request:
         :return:
         """
         opts = self.opts
         return request.user.has_perm('%s.%s' % (opts.app_label, "export"))
+
+    def has_notify_permission(self, request):
+        opts = self.opts
+        return request.user.has_perm('%s.%s' % (opts.app_label, 'notify'))
 
     def get_fieldsets(self, request, obj=None):
         """
@@ -134,6 +141,7 @@ class CandidateAdmin(admin.ModelAdmin):
         对于非管理员，非HR，获取自己是一面面试官或者二面面试官的候选人集合
         先查出没有权限控制时完整的queryset（调用父类的get_queryset方法）；
         再根据用户所属组来判断应该返回多大的子集；
+        :return:
         :param request:
         :return:
         """

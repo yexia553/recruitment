@@ -14,7 +14,7 @@ def add(x, y):
 @shared_task
 def send_interview_notify(candidates, send_to):
     subject = '面试通知'
-    body = '%s 进入出面，请准备面试' % candidates
+    body = '%s 进入出面，请您准备进行面试' % candidates
     send_from = '1906390603@qq.com'
 
     try:
